@@ -1,31 +1,25 @@
 package com.example.currencyConverter.model;
 
-
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CurrencyApiResponse {
 
-    @JsonProperty("USDBRL")
-    private CurrencyData usdBrl;
-    @JsonProperty("EURBRL")
-    private CurrencyData eurBrl;
+    // Mapa para armazenar todos os pares de moedas e seus dados
+    private final Map<String, CurrencyData> currencyDataMap = new HashMap<>();
 
-    public CurrencyData getUsdBrl() {
-        return usdBrl;
+    @JsonAnySetter
+    public void setCurrencyData(String key, CurrencyData value) {
+        currencyDataMap.put(key, value);
     }
 
-    public void setUsdBrl(CurrencyData usdBrl) {
-        this.usdBrl = usdBrl;
-    }
-
-    public CurrencyData getEurBrl() {
-        return eurBrl;
-    }
-
-    public void setEurBrl(CurrencyData eurBrl) {
-        this.eurBrl = eurBrl;
+    @JsonAnyGetter
+    public Map<String, CurrencyData> getCurrencyDataMap() {
+        return currencyDataMap;
     }
 
     public static class CurrencyData {
@@ -49,23 +43,14 @@ public class CurrencyApiResponse {
         }
     }
 
-    public BigDecimal getExchangeRate(String currency) {
-        CurrencyData currencyData = null;
-
-        if ("USDBRL".equalsIgnoreCase(currency)) {
-            currencyData = getUsdBrl();
-        } else if ("EURBRL".equalsIgnoreCase(currency)) {
-            currencyData = getEurBrl();
-        }
-
-        if (currencyData != null) {
-            String ask = currencyData.getAsk();
-            if (ask != null) {
-                try {
-                    return new BigDecimal(ask);
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                }
+    // Método para obter a taxa de câmbio de um par específico
+    public BigDecimal getExchangeRate(String currencyPair) {
+        CurrencyData currencyData = currencyDataMap.get(currencyPair.toUpperCase());
+        if (currencyData != null && currencyData.getAsk() != null) {
+            try {
+                return new BigDecimal(currencyData.getAsk());
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
         }
         return BigDecimal.ZERO;

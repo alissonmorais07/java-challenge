@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 
 public class ExchangeRequest {
 
-
     @NotNull(message = "The user ID cannot be null!")
     private Long userID;
     @NotEmpty(message = "Source currency cannot be empty!")

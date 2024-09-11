@@ -5,33 +5,41 @@ import com.example.currencyConverter.dto.response.ExchangeResponse;
 import com.example.currencyConverter.model.CurrencyApiResponse;
 import com.example.currencyConverter.model.CurrencyConversion;
 import com.example.currencyConverter.repository.CurrencyRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClientException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CurrencyConversionService {
 
-    @Autowired
-    private RestTemplate restTemplate;
+    private final RestTemplate restTemplate;
+    private final CurrencyRepository currencyRepository;
 
-    @Autowired
-    private CurrencyRepository currencyRepository;
+    public CurrencyConversionService(RestTemplate restTemplate, CurrencyRepository currencyRepository) {
+        this.restTemplate = restTemplate;
+        this.currencyRepository = currencyRepository;
+    }
 
     public ExchangeResponse convertCurrency(ExchangeRequest request) {
         // URL da API com os pares de moedas desejados
         String url = String.format("https://economia.awesomeapi.com.br/json/last/%s-%s",
                 request.getFromCurrency(), request.getToCurrency());
 
-        // Obtém a resposta da API
-        CurrencyApiResponse apiResponse = restTemplate.getForObject(url, CurrencyApiResponse.class);
+        CurrencyApiResponse apiResponse;
+        try {
+            // Obtém a resposta da API
+            apiResponse = restTemplate.getForObject(url, CurrencyApiResponse.class);
+        } catch (RestClientException e) {
+            throw new RuntimeException("Error when trying to connect to the exchange API: " + e.getMessage(), e);
+        }
 
-        // Verifica se a resposta da API é nula
+        // Verifica se a resposta da API é válida
         if (apiResponse == null) {
-            throw new RuntimeException("A resposta da API é nula. Verifique a URL e a disponibilidade do serviço.");
+            throw new RuntimeException("The API response is null. Check the URL and service availability.");
         }
 
         // Obtém a taxa de câmbio para o par de moedas
@@ -39,26 +47,37 @@ public class CurrencyConversionService {
         BigDecimal exchangeRate = apiResponse.getExchangeRate(key);
 
         if (exchangeRate == null) {
-            throw new RuntimeException("Taxa de câmbio não encontrada para o par de moedas: " + key);
+            throw new RuntimeException("Exchange rate not found for currency pair: " + key);
         }
 
         // Calcula o valor convertido
         BigDecimal toValue = request.getValue().multiply(exchangeRate);
 
-        // Prepara a resposta
-        ExchangeResponse response = new ExchangeResponse();
-        response.setTransactionID(System.currentTimeMillis()); // Simulação de ID de transação
-        response.setUserID(request.getUserID());
-        response.setFromCurrency(request.getFromCurrency());
-        response.setToCurrency(request.getToCurrency());
-        response.setFromValue(request.getValue());
-        response.setToValue(toValue);
-        response.setExchangeRate(exchangeRate);
-        response.setDateTime(LocalDateTime.now());
+        // Cria e salva a conversão no banco de dados
+        CurrencyConversion conversion = createCurrencyConversion(request, exchangeRate, toValue);
+       CurrencyConversion savedConversion = currencyRepository.save(conversion);
 
-        //Salva a conversão no banco de dados
-        CurrencyConversion conversion;
-        conversion = new CurrencyConversion();
+        // Prepara e retorna a resposta
+        return createExchangeResponse(savedConversion);
+    }
+
+    // Método auxiliar para criar a resposta
+    private ExchangeResponse createExchangeResponse(CurrencyConversion conversion) {
+        ExchangeResponse response = new ExchangeResponse();
+        response.setTransactionID(conversion.getTransactionID()); // Usando o ID gerado automaticamente
+        response.setUserID(conversion.getUserID());
+        response.setFromCurrency(conversion.getFromCurrency());
+        response.setToCurrency(conversion.getToCurrency());
+        response.setFromValue(conversion.getFromValue());
+        response.setToValue(conversion.getToValue());
+        response.setExchangeRate(conversion.getExchangeRate());
+        response.setDateTime(conversion.getDateTime());
+        return response;
+    }
+
+    // Método auxiliar para criar a conversão
+    private CurrencyConversion createCurrencyConversion(ExchangeRequest request, BigDecimal exchangeRate, BigDecimal toValue) {
+        CurrencyConversion conversion = new CurrencyConversion();
         conversion.setUserID(request.getUserID());
         conversion.setFromCurrency(request.getFromCurrency());
         conversion.setToCurrency(request.getToCurrency());
@@ -66,11 +85,14 @@ public class CurrencyConversionService {
         conversion.setToValue(toValue);
         conversion.setExchangeRate(exchangeRate);
         conversion.setDateTime(LocalDateTime.now());
-
-        //Salva a conversão no repositório
-        currencyRepository.save(conversion);
-
-        return response;
+        return conversion;
     }
 
+    public List<CurrencyConversion> findExchangeRecordsByUser(Long userID) {
+        return currencyRepository.findByUserID(userID);
+    }
+
+    public List<CurrencyConversion> findAllRecords() {
+        return currencyRepository.findAll();
+    }
 }

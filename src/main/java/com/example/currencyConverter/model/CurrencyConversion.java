@@ -11,7 +11,7 @@ public class CurrencyConversion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long transactionID;
 
     private Long userID;
     private String fromCurrency;
@@ -21,12 +21,12 @@ public class CurrencyConversion {
     private BigDecimal exchangeRate;
     private LocalDateTime dateTime;
 
-    public Long getId() {
-        return id;
+    public Long getTransactionID() {
+        return transactionID;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setTransactionID(Long transactionID) {
+        this.transactionID = transactionID;
     }
 
     public Long getUserID() {
