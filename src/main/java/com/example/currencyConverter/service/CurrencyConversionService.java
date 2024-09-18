@@ -25,24 +25,20 @@ public class CurrencyConversionService {
     }
 
     public ExchangeResponse convertCurrency(ExchangeRequest request) {
-        // URL da API com os pares de moedas desejados
         String url = String.format("https://economia.awesomeapi.com.br/json/last/%s-%s",
                 request.getFromCurrency(), request.getToCurrency());
 
         CurrencyApiResponse apiResponse;
         try {
-            // Obtém a resposta da API
             apiResponse = restTemplate.getForObject(url, CurrencyApiResponse.class);
         } catch (RestClientException e) {
             throw new RuntimeException("Error when trying to connect to the exchange API: " + e.getMessage(), e);
         }
 
-        // Verifica se a resposta da API é válida
         if (apiResponse == null) {
             throw new RuntimeException("The API response is null. Check the URL and service availability.");
         }
 
-        // Obtém a taxa de câmbio para o par de moedas
         String key = request.getFromCurrency() + request.getToCurrency();
         BigDecimal exchangeRate = apiResponse.getExchangeRate(key);
 
@@ -50,18 +46,14 @@ public class CurrencyConversionService {
             throw new RuntimeException("Exchange rate not found for currency pair: " + key);
         }
 
-        // Calcula o valor convertido
         BigDecimal toValue = request.getValue().multiply(exchangeRate);
 
-        // Cria e salva a conversão no banco de dados
         CurrencyConversion conversion = createCurrencyConversion(request, exchangeRate, toValue);
-       CurrencyConversion savedConversion = currencyRepository.save(conversion);
+        CurrencyConversion savedConversion = currencyRepository.save(conversion);
 
-        // Prepara e retorna a resposta
         return createExchangeResponse(savedConversion);
     }
 
-    // Método auxiliar para criar a resposta
     private ExchangeResponse createExchangeResponse(CurrencyConversion conversion) {
         ExchangeResponse response = new ExchangeResponse();
         response.setTransactionID(conversion.getTransactionID()); // Usando o ID gerado automaticamente
@@ -75,7 +67,6 @@ public class CurrencyConversionService {
         return response;
     }
 
-    // Método auxiliar para criar a conversão
     private CurrencyConversion createCurrencyConversion(ExchangeRequest request, BigDecimal exchangeRate, BigDecimal toValue) {
         CurrencyConversion conversion = new CurrencyConversion();
         conversion.setUserID(request.getUserID());

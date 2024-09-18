@@ -2,6 +2,8 @@ package com.example.currencyConverter.model;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -9,7 +11,6 @@ import java.util.Map;
 
 public class CurrencyApiResponse {
 
-    // Mapa para armazenar todos os pares de moedas e seus dados
     private final Map<String, CurrencyData> currencyDataMap = new HashMap<>();
 
     @JsonAnySetter
@@ -22,28 +23,13 @@ public class CurrencyApiResponse {
         return currencyDataMap;
     }
 
+    @Getter
+    @Setter
     public static class CurrencyData {
         private String bid;
         private String ask;
-
-        public String getBid() {
-            return bid;
-        }
-
-        public void setBid(String bid) {
-            this.bid = bid;
-        }
-
-        public String getAsk() {
-            return ask;
-        }
-
-        public void setAsk(String ask) {
-            this.ask = ask;
-        }
     }
 
-    // Método para obter a taxa de câmbio de um par específico
     public BigDecimal getExchangeRate(String currencyPair) {
         CurrencyData currencyData = currencyDataMap.get(currencyPair.toUpperCase());
         if (currencyData != null && currencyData.getAsk() != null) {
