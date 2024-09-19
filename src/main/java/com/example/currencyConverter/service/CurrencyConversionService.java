@@ -56,7 +56,7 @@ public class CurrencyConversionService {
 
     private ExchangeResponse createExchangeResponse(CurrencyConversion conversion) {
         ExchangeResponse response = new ExchangeResponse();
-        response.setTransactionID(conversion.getTransactionID()); // Usando o ID gerado automaticamente
+        response.setTransactionID(conversion.getTransactionID());
         response.setUserID(conversion.getUserID());
         response.setFromCurrency(conversion.getFromCurrency());
         response.setToCurrency(conversion.getToCurrency());
