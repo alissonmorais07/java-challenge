@@ -54,7 +54,7 @@ public class CurrencyConversionController {
         }
 
         if (conversions.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            return userID == null ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
         }
 
         return ResponseEntity.ok(conversions);
