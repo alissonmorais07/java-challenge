@@ -25,7 +25,7 @@ This project was developed using `Java 17`, `Spring Boot v3.3.3` and `Junit 5` f
 ![Captura de tela de 2024-09-19 21-21-52](https://github.com/user-attachments/assets/b9e16035-3eb4-4e55-8ad0-68ccda1f8fbc)
 
 ## Using Render
-- To make requests for currency in the cloud, using the Render service, add the URL = `https://java-challenge-deploy.onrender.com` to your request tool.
+- To make requests for currency in the cloud, using the `Render` service, add the URL = `https://java-challenge-deploy.onrender.com` to your request tool.
 - For the HTTP `POST` method, choose the currency pair to perform the conversion. One for Base and one for destination.
   Exemple: Example: Euro(EUR) to Japanese Yen(JPY)
 - Request body:
@@ -37,7 +37,7 @@ This project was developed using `Java 17`, `Spring Boot v3.3.3` and `Junit 5` f
   "userdID": 2
   }
 ![Captura de tela de 2024-09-21 18-55-56](https://github.com/user-attachments/assets/dc3642bb-2afe-4e59-83a2-3609d4eeb6c6)
-- For the HTTP `GET` method, execute the request: `localhost:8080/api/list` to return all transactions or `localhost:8080/api/list?userID=1` to return a transaction for a specific user.
+- For the HTTP `GET` method, execute the request: `https://java-challenge-deploy.onrender.com/api/list` to return all transactions or `https://java-challenge-deploy.onrender.com/api/list?userID=1` to return a transaction for a specific user.
 
 ![Captura de tela de 2024-09-21 18-57-29](https://github.com/user-attachments/assets/6e1bb37b-f952-4446-a820-ebcf2a9adc05)
 
