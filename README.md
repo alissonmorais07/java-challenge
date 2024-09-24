@@ -1,8 +1,8 @@
 # Currency Conversion API
 ## API Documentation
-This project was developed using `Java 11`, `Spring Boot v3.3.3` and `Junit 5` for unit testing. Documentation was done using `Swagger`.
+This project was developed using `Java 17`, `Spring Boot v3.3.3` and `Junit 5` for unit testing. Documentation was done using `Swagger`.
 ## Installation
-1. Clone the repository - Make sure you have `Java 11` installed and `Maven`.
+1. Clone the repository - Make sure you have `Java 17` installed and `Maven`.
    ```bash
    git clone https://github.com/alissonmorais07/java-challenge.git
 - After that, download the required dependencies in pom.xml. Then look for the `CurrencyConverterApplication` main class and run it using `CTRL + SHIFT + F10` or click the run button.
