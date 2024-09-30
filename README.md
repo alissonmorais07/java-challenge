@@ -5,6 +5,7 @@ This project was developed using `Java 17`, `Spring Boot v3.3.3` and `Junit 5` f
 1. Clone the repository - Make sure you have `Java 17` installed and `Maven`.
    ```bash
    git clone https://github.com/alissonmorais07/java-challenge.git
+- Configure the environment variables according to your PostgreSQL database credentials or simply set up H2 for local development.
 - After that, download the required dependencies in pom.xml. Then look for the `CurrencyConverterApplication` main class and run it using `CTRL + SHIFT + F10` or click the run button.
 
 2. Open your favorite request tool. Examples: `Postman`, `Insomnia` or other.
